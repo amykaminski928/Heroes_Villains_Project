@@ -18,15 +18,16 @@ def supers_list (request):
     serialized_villains = SuperSerializer(villains, many = True)
     type_param = request.query_params.get('type')
 
-    if type_param == True:
-        supers = supers.filter(super_types__type=type_param)
-        return Response(serializer.data)   
-
-    if request.method == 'GET':  
-        custom_response_dict = {
-            'Heroes': [serialized_heroes.data],
-            'Villians': [serialized_villains.data]
-            }
+    if request.method == 'GET':
+        if type_param:
+            queryset= supers.filter(super_types__type=type_param)
+            serializer= SuperSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:  
+            custom_response_dict = {
+        'Heroes': [serialized_heroes.data],
+        'Villians': [serialized_villains.data]
+        }
         return Response(custom_response_dict, status=status.HTTP_200_OK)
         
     if request.method == 'POST':
